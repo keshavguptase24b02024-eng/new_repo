@@ -1,0 +1,5 @@
+{
+  "name": "Groundwater Pollution Index Calculator",
+  "description": "An advanced tool for calculating, visualizing, and analyzing heavy metal pollution indices (HPI, HEI, Cd) in groundwater. Features CSV data upload, manual entry, map-based visualization, and AI-powered analysis and recommendations using Gemini.",
+  "requestFramePermissions": []
+}
