@@ -7,73 +7,70 @@ interface HeaderProps {
     setActiveView: (view: View) => void;
     onUploadClick: () => void;
     onManualClick: () => void;
+    onGoHome: () => void;
 }
 
 const NavButton: React.FC<{
-    icon: React.ReactNode;
     label: string;
     isActive?: boolean;
     onClick: () => void;
-}> = ({ icon, label, isActive, onClick }) => (
+}> = ({ label, isActive, onClick }) => (
     <button 
         onClick={onClick}
-        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
+        className={`px-3 py-2 text-sm font-semibold transition-colors duration-200 relative ${
             isActive
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-gray-600 hover:bg-gray-200'
+                ? 'text-slate-900'
+                : 'text-slate-500 hover:text-slate-800'
         }`}
     >
-        {icon}
-        <span>{label}</span>
+        {label}
+        {isActive && <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-purple-600 rounded-full"></div>}
     </button>
 );
 
 
-const Header: React.FC<HeaderProps> = ({ activeView, setActiveView, onUploadClick, onManualClick }) => {
+const Header: React.FC<HeaderProps> = ({ activeView, setActiveView, onUploadClick, onManualClick, onGoHome }) => {
   return (
-    <header className="bg-white/80 backdrop-blur-sm p-3 sticky top-0 z-40 border-b border-gray-200">
-      <div className="container mx-auto flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center shadow-md">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+    <header className="bg-slate-100/70 backdrop-blur-lg p-3 sticky top-3 z-40 border border-slate-200/60 rounded-xl shadow-lg shadow-slate-900/5 max-w-screen-2xl mx-auto">
+      <div className="flex items-center justify-between">
+        <button onClick={onGoHome} className="flex items-center space-x-3 group">
+             <div className="w-9 h-9 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-md shadow-purple-500/30 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-purple-500/40 group-hover:scale-105">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
             </div>
-            <h1 className="text-xl font-bold text-gray-800 tracking-tight">
-            Aqua-Assess
+            <h1 className="text-xl font-bold text-slate-800 tracking-tighter">
+             Aqua-Assess
           </h1>
-        </div>
+        </button>
 
-        <div className="hidden md:flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
+        <div className="hidden md:flex items-center space-x-2">
              <NavButton
                 label="Reports"
                 isActive={activeView === 'reports'}
                 onClick={() => setActiveView('reports')}
-                icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" /></svg>}
             />
             <NavButton
                 label="Map View"
                 isActive={activeView === 'map'}
                 onClick={() => setActiveView('map')}
-                icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>}
             />
              <NavButton
                 label="AI Analysis"
                 isActive={activeView === 'ai'}
                 onClick={() => setActiveView('ai')}
-                icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" /></svg>}
             />
         </div>
         
-        <div className="flex items-center space-x-2">
-            <button onClick={onUploadClick} className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium text-gray-600 bg-gray-200 hover:bg-gray-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" /></svg>
-                <span className="hidden sm:inline">Upload Data</span>
+        <div className="flex items-center space-x-3">
+            <button onClick={onUploadClick} className="flex items-center space-x-2 px-3.5 py-1.5 rounded-lg transition-colors text-sm font-semibold text-slate-700 bg-white/70 border border-slate-300 hover:bg-white hover:text-slate-900 hover:border-slate-400 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" /></svg>
+                <span className="hidden sm:inline">Upload</span>
             </button>
-             <button onClick={onManualClick} className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium text-blue-600 bg-blue-100 hover:bg-blue-200">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>
-                <span className="hidden sm:inline">Single Test</span>
+             <button onClick={onManualClick} className="flex items-center space-x-2 px-3.5 py-1.5 rounded-lg transition-colors text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 shadow-md shadow-purple-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>
+                <span className="hidden sm:inline">Add Sample</span>
             </button>
         </div>
       </div>

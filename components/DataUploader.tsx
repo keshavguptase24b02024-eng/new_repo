@@ -9,6 +9,7 @@ interface DataUploaderProps {
 
 const DataUploader: React.FC<DataUploaderProps> = ({ onDataLoaded, setErrorMessage }) => {
   const [fileName, setFileName] = useState<string>('');
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -18,6 +19,30 @@ const DataUploader: React.FC<DataUploaderProps> = ({ onDataLoaded, setErrorMessa
     }
      event.target.value = ''; // Reset file input
   };
+  
+  const handleDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+  };
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+  };
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      const file = e.dataTransfer.files?.[0];
+      if (file && file.type === "text/csv") {
+        setFileName(file.name);
+        parseCSV(file);
+      } else {
+        setErrorMessage("Please drop a valid .csv file.");
+      }
+  };
+
 
   const parseCSV = useCallback((file: File) => {
     const reader = new FileReader();
@@ -95,21 +120,29 @@ const DataUploader: React.FC<DataUploaderProps> = ({ onDataLoaded, setErrorMessa
   }, [onDataLoaded, setErrorMessage]);
 
   return (
-    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-      <h3 className="text-lg font-semibold mb-4 text-blue-600">Upload CSV Data</h3>
+    <div className="bg-white p-8 rounded-lg w-full">
+      <h3 className="text-xl font-bold mb-1 text-slate-800">Upload CSV Data</h3>
+      <p className="text-sm text-slate-500 mb-6">Get started by uploading your groundwater sample data.</p>
       <div className="flex items-center justify-center w-full">
-        <label htmlFor="csv-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-            <svg className="w-8 h-8 mb-4 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+        <label 
+            htmlFor="csv-upload" 
+            className={`flex flex-col items-center justify-center w-full h-48 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 transition-colors ${isDragging ? 'bg-purple-100 border-purple-400' : 'hover:bg-slate-100'}`}
+            onDragEnter={handleDragEnter}
+            onDragOver={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+        >
+          <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+            <svg className="w-10 h-10 mb-4 text-slate-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
             </svg>
-            <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-            <p className="text-xs text-gray-400">CSV file with latitude, longitude & metals</p>
+            <p className="mb-2 text-sm text-slate-500"><span className="font-semibold text-purple-600">Click to upload</span> or drag and drop</p>
+            <p className="text-xs text-slate-400">CSV file with latitude, longitude & metals</p>
           </div>
           <input id="csv-upload" type="file" className="hidden" accept=".csv" onChange={handleFileChange} />
         </label>
       </div>
-      {fileName && <p className="text-sm mt-4 text-green-600">Loaded: {fileName}</p>}
+      {fileName && <p className="text-sm mt-4 text-center text-green-700 font-medium bg-green-100 py-2 px-4 rounded-md">Successfully loaded: {fileName}</p>}
     </div>
   );
 };

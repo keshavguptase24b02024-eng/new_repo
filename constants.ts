@@ -87,10 +87,10 @@ export const getQualityClass = (value: number, classification: Record<string, nu
 };
 
 export const QUALITY_INFO: Record<QualityClass, { text: string; className: string; mapColor: string; }> = {
-    [QualityClass.Excellent]: { text: 'EXCELLENT', className: 'bg-green-500 text-white', mapColor: '#22c55e'},
-    [QualityClass.Good]: { text: 'GOOD', className: 'bg-green-500 text-white', mapColor: '#22c55e' },
-    [QualityClass.Fair]: { text: 'FAIR', className: 'bg-yellow-500 text-black', mapColor: '#eab308' },
-    [QualityClass.Poor]: { text: 'POOR', className: 'bg-orange-500 text-white', mapColor: '#f97316' },
-    [QualityClass.VeryPoor]: { text: 'VERY POOR', className: 'bg-red-500 text-white', mapColor: '#ef4444' },
-    [QualityClass.Unsuitable]: { text: 'UNSUITABLE', className: 'bg-red-700 text-white', mapColor: '#b91c1c' },
+    [QualityClass.Excellent]: { text: 'EXCELLENT', className: 'bg-green-100 text-green-800 border-green-200', mapColor: '#22c55e'},
+    [QualityClass.Good]: { text: 'GOOD', className: 'bg-green-100 text-green-800 border-green-200', mapColor: '#22c55e' },
+    [QualityClass.Fair]: { text: 'FAIR', className: 'bg-yellow-100 text-yellow-800 border-yellow-200', mapColor: '#facc15' },
+    [QualityClass.Poor]: { text: 'POOR', className: 'bg-orange-100 text-orange-800 border-orange-200', mapColor: '#fb923c' },
+    [QualityClass.VeryPoor]: { text: 'VERY POOR', className: 'bg-red-100 text-red-800 border-red-200', mapColor: '#f87171' },
+    [QualityClass.Unsuitable]: { text: 'UNSUITABLE', className: 'bg-red-200 text-red-900 border-red-300', mapColor: '#ef4444' },
 };

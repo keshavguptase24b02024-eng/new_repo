@@ -1,4 +1,3 @@
-
 import { SampleData, Metal } from '../types';
 
 const rawData = `S. No.	State	District	Location	Longitude	Latitude	Year	pH	EC (ÂµS/cm at	CO3 (mg/L)	HCO3	Cl (mg/L)	F (mg/L)	SO4	NO3	PO4	Total Hardness	Ca (mg/L)	Mg (mg/L)	Na (mg/L)	K (mg/L)	Fe (ppm)	As (ppb)	U (ppb)
@@ -6,26 +5,26 @@ const rawData = `S. No.	State	District	Location	Longitude	Latitude	Year	pH	EC (�
 2	Andaman & Nicobar Islands	North & Middle Andaman	Baratang (Nilambur)	92.767	12.1683	2023	8.19	473	0	31	96	0	50	10	0.03	180	14	38	30	4	-	-	-
 3	Andaman & Nicobar Islands	North & Middle Andaman	Diglipur	92.9833	13.25	2023	7.91	375	0	153	18	0.13	26	6	0.02	150	14	30	21	3	0.44	-	-
 4	Andaman & Nicobar Islands	North & Middle Andaman	Mayabunder	92.9192	12.9261	2023	7.96	394	0	171	11	0.21	25	12	0.04	150	13	31	21	4	-	-	-
-5	Andaman & Nicobar Islands	North & Middle Andaman	Rangat	92.9338	12.473	2023	8.12	416	0	177	18	0.13	29	9	0.05	160	13	33	23	4	0.61	-	-
+5	Andaman & Nicobar Islands	North & Middle Andaman	Rangat	92.9338	12.473	2023	8.12	416	0	177	18	0.13	29	9	0.05	160	13	33	23	4	0.61	-	-	-
 6	Andaman & Nicobar Islands	South Andaman	Bambooflat	92.7093	11.6961	2023	7.82	503	0	232	21	0.2	36	14	0.08	200	15	42	29	6	-	-	-
-7	Andaman & Nicobar Islands	South Andaman	Chidiyatapu	92.7111	11.5117	2023	7.98	620	0	287	28	0.22	45	17	0.06	250	20	50	36	7	0.55	-	-
-8	Andaman & Nicobar Islands	South Andaman	Garacharma	92.7302	11.6373	2023	7.91	561	0	256	25	0.19	40	16	0.07	220	18	45	33	6	0.58	-	-
+7	Andaman & Nicobar Islands	South Andaman	Chidiyatapu	92.7111	11.5117	2023	7.98	620	0	287	28	0.22	45	17	0.06	250	20	50	36	7	0.55	-	-	-
+8	Andaman & Nicobar Islands	South Andaman	Garacharma	92.7302	11.6373	2023	7.91	561	0	256	25	0.19	40	16	0.07	220	18	45	33	6	0.58	-	-	-
 9	Andaman & Nicobar Islands	South Andaman	Havelock	92.9833	11.9667	2023	8.05	485	0	214	18	0.15	33	13	0.05	190	16	39	27	5	-	-	-
 10	Andaman & Nicobar Islands	South Andaman	Neil Island	93.0333	11.8333	2023	8.15	496	0	220	20	0.16	35	14	0.06	200	17	41	28	5	-	-	-
-11	Andaman & Nicobar Islands	South Andaman	Port Blair	92.7508	11.6702	2023	7.88	532	0	244	23	0.18	38	15	0.07	210	17	43	31	6	0.62	-	-
-12	Andaman & Nicobar Islands	South Andaman	Prothrapur	92.7167	11.65	2023	7.85	512	0	238	22	0.17	37	14	0.07	205	16	42	30	6	0.59	-	-
-13	Andaman & Nicobar Islands	South Andaman	Wandoor	92.6171	11.6111	2023	7.94	592	0	268	27	0.21	43	16	0.06	240	19	48	35	7	0.56	-	-
+11	Andaman & Nicobar Islands	South Andaman	Port Blair	92.7508	11.6702	2023	7.88	532	0	244	23	0.18	38	15	0.07	210	17	43	31	6	0.62	-	-	-
+12	Andaman & Nicobar Islands	South Andaman	Prothrapur	92.7167	11.65	2023	7.85	512	0	238	22	0.17	37	14	0.07	205	16	42	30	6	0.59	-	-	-
+13	Andaman & Nicobar Islands	South Andaman	Wandoor	92.6171	11.6111	2023	7.94	592	0	268	27	0.21	43	16	0.06	240	19	48	35	7	0.56	-	-	-
 14	Andhra Pradesh	Anantapur	Anantapur	77.6	14.6833	2023	7.96	951	0	244	121	0.98	65	34	0.12	420	45	96	98	4	-	-	-
-15	Andhra Pradesh	Anantapur	Dharmavaram	77.7167	14.4167	2023	8.08	1125	6	281	153	1.12	82	41	0.15	510	55	118	115	5	0.48	-	-
+15	Andhra Pradesh	Anantapur	Dharmavaram	77.7167	14.4167	2023	8.08	1125	6	281	153	1.12	82	41	0.15	510	55	118	115	5	0.48	-	-	-
 16	Andhra Pradesh	Anantapur	Gooty	77.6333	15.1167	2023	8.15	1250	9	305	182	1.25	98	49	0.18	580	62	135	132	6	-	-	-
 17	Andhra Pradesh	Anantapur	Hindupur	77.4833	13.8333	2023	8.21	1380	12	330	210	1.38	115	57	0.21	650	70	152	150	7	-	-	-
-18	Andhra Pradesh	Anantapur	Kadiri	78.1667	14.1167	2023	8.04	1080	5	268	145	1.05	75	38	0.14	480	52	110	108	5	0.51	-	-
+18	Andhra Pradesh	Anantapur	Kadiri	78.1667	14.1167	2023	8.04	1080	5	268	145	1.05	75	38	0.14	480	52	110	108	5	0.51	-	-	-
 19	Andhra Pradesh	Anantapur	Kalyandurg	77.1	14.55	2023	7.99	1010	3	256	135	1	70	35	0.13	450	48	103	102	4	-	-	-
 20	Andhra Pradesh	Anantapur	Madakasira	77.2667	13.9333	2023	8.25	1450	15	354	225	1.45	125	62	0.23	700	75	163	160	8	-	-	-
 21	Andhra Pradesh	Anantapur	Penukonda	77.5833	14.0833	2023	8.18	1320	10	317	200	1.32	108	54	0.2	620	66	144	142	7	-	-	-
 22	Andhra Pradesh	Anantapur	Rayadurg	76.85	14.7	2023	8.02	1050	4	262	140	1.02	72	36	0.13	460	50	106	105	5	0.49	-	-	-
 23	Andhra Pradesh	Anantapur	Singanamala	77.7167	14.8	2023	7.93	980	2	250	128	0.99	68	34	0.12	430	46	99	100	4	-	-	-
-24	Andhra Pradesh	Anantapur	Tadipatri	78.0167	14.9167	2023	8.11	1180	8	293	165	1.18	90	45	0.16	540	58	125	123	6	0.53	-	-
+24	Andhra Pradesh	Anantapur	Tadipatri	78.0167	14.9167	2023	8.11	1180	8	293	165	1.18	90	45	0.16	540	58	125	123	6	0.53	-	-	-
 25	Andhra Pradesh	Anantapur	Uravakonda	77.25	14.95	2023	8.06	1150	7	287	160	1.15	85	43	0.16	520	56	120	118	6	-	-	-
 26	Andhra Pradesh	Chittoor	Chittoor	79.1	13.2167	2023	7.85	850	0	214	105	0.85	55	28	0.1	380	40	88	85	4	-	-	-
 27	Andhra Pradesh	Chittoor	Kalahasti	79.7	13.75	2023	7.98	980	2	250	128	0.99	68	34	0.12	430	46	99	100	4	-	-	-
@@ -690,8 +689,7 @@ Haryana	Palwal	Rasulpur	77.3982	28.0865	2023	7.6	1137	0	449	71	0.81	29	111	0	395
 Haryana	Palwal	Theraka	77.3845	28.1277	2023	7	4502	0	483	710	0.67	810	58	0	725	130	97	694	60	0.08	0.2	4.63
 668	Assam	Jorhat	Jorhat	94.2037	26.7523	2023	7.3	410	0	160	35	0.19	28	9	0.05	190	38	22	48	3	0.75	14.0	0.75`;
 
-// FIX: Added parsing logic for the raw data string and exported PRELOADED_SAMPLES as required by App.tsx.
-const parsePreloadedData = (): SampleData[] => {
+function parsePreloadedData(): SampleData[] {
   const lines = rawData.trim().split('\n');
   const headerLine = lines.shift();
   if (!headerLine) return [];

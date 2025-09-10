@@ -3,9 +3,8 @@ import { GoogleGenAI } from "@google/genai";
 import { AnalysisResult } from '../types';
 
 export const getAnalysisFromGemini = async (results: AnalysisResult[]): Promise<string> => {
-  if (!process.env.API_KEY) {
-    return "Error: API_KEY environment variable is not set. Please configure it to enable AI analysis.";
-  }
+  // Fix: Removed explicit API_KEY check to comply with coding guidelines.
+  // The API key is assumed to be present in the environment.
   if (results.length === 0) {
     return "No data to analyze. Please upload or enter sample data first.";
   }
