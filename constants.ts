@@ -8,6 +8,7 @@ export const AVAILABLE_METALS: Metal[] = [
   Metal.Cr,
   Metal.Ni,
   Metal.Zn,
+  Metal.Fe,
 ];
 
 export const STANDARDS: Record<string, Standard> = {
@@ -21,6 +22,7 @@ export const STANDARDS: Record<string, Standard> = {
       [Metal.Cr]: { permissible: 0.05, ideal: 0 },
       [Metal.Ni]: { permissible: 0.07, ideal: 0 },
       [Metal.Zn]: { permissible: 5.0, ideal: 0 },
+      [Metal.Fe]: { permissible: 0.3, ideal: 0 },
     },
   },
   BIS: {
@@ -33,6 +35,7 @@ export const STANDARDS: Record<string, Standard> = {
       [Metal.Cr]: { permissible: 0.05, ideal: 0 },
       [Metal.Ni]: { permissible: 0.02, ideal: 0 },
       [Metal.Zn]: { permissible: 5.0, ideal: 0 },
+      [Metal.Fe]: { permissible: 0.3, ideal: 0 },
     },
   },
   CGWB: {
@@ -45,6 +48,7 @@ export const STANDARDS: Record<string, Standard> = {
       [Metal.Cr]: { permissible: 0.05, ideal: 0 },
       [Metal.Ni]: { permissible: 0.02, ideal: 0 },
       [Metal.Zn]: { permissible: 5.0, ideal: 0 },
+      [Metal.Fe]: { permissible: 0.3, ideal: 0 },
     },
   },
 };

@@ -10,7 +10,7 @@ const SampleInputForm: React.FC<SampleInputFormProps> = ({ onAddSample }) => {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [concentrations, setConcentrations] = useState<Record<Metal, string>>({
-    Pb: '', As: '', Hg: '', Cd: '', Cr: '', Ni: '', Zn: '',
+    Pb: '', As: '', Hg: '', Cd: '', Cr: '', Ni: '', Zn: '', Fe: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,7 +50,7 @@ const SampleInputForm: React.FC<SampleInputFormProps> = ({ onAddSample }) => {
     // Reset form
     setLatitude('');
     setLongitude('');
-    setConcentrations({ Pb: '', As: '', Hg: '', Cd: '', Cr: '', Ni: '', Zn: '' });
+    setConcentrations({ Pb: '', As: '', Hg: '', Cd: '', Cr: '', Ni: '', Zn: '', Fe: '' });
   };
 
   const handleConcentrationChange = (metal: Metal, value: string) => {

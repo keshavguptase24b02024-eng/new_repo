@@ -7,6 +7,7 @@ export enum Metal {
   Cr = 'Cr',
   Ni = 'Ni',
   Zn = 'Zn',
+  Fe = 'Fe',
 }
 
 export type SampleData = {
