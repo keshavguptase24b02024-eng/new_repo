@@ -1,14 +1,42 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisResult } from '../types';
 
-export const getAnalysisFromGemini = async (results: AnalysisResult[]): Promise<string> => {
-  try {
-    if (results.length === 0) {
-      return "No data to analyze. Please upload or enter sample data first.";
-    }
+// Extend the Window interface to include our custom property for type safety.
+declare global {
+  interface Window {
+    GEMINI_API_KEY?: string;
+  }
+}
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const getAnalysisFromGemini = async (results: AnalysisResult[]): Promise<string> => {
+  if (results.length === 0) {
+    return "No data to analyze. Please upload or enter sample data first.";
+  }
+
+  // Prioritize environment variables, but fall back to a window property for local development.
+  const apiKey = (typeof process !== 'undefined' ? process.env.API_KEY : undefined) || window.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    // This message is formatted in markdown so it will render nicely in the AI Analysis view.
+    return `
+### AI Analysis Configuration Error
+
+**An API key is required to use the AI analysis feature.**
+
+This application is designed to use an API key provided through environment variables (\`process.env.API_KEY\`), which is standard for production environments.
+
+**For local development:** Since your current setup doesn't provide this environment variable, you can set the API key for your browser session. Open the developer console (usually with F12 or Ctrl+Shift+I) and execute the following command, replacing \`"YOUR_API_KEY_HERE"\` with your actual Gemini API key:
+
+\`\`\`javascript
+window.GEMINI_API_KEY = "YOUR_API_KEY_HERE";
+\`\`\`
+
+After running the command, please try generating the analysis again. This key will only be stored for your current session and will need to be set again if you close the browser tab.
+    `;
+  }
+  
+  try {
+    const ai = new GoogleGenAI({ apiKey });
 
     const prompt = `
     You are an expert environmental scientist specializing in groundwater contamination.
@@ -35,20 +63,9 @@ export const getAnalysisFromGemini = async (results: AnalysisResult[]): Promise<
     return response.text;
   } catch (error) {
     console.error("Error fetching analysis from Gemini:", error);
-
-    // Check for the specific error related to 'process' not being defined in a simple browser environment.
-    if (error instanceof ReferenceError && error.message.includes("process is not defined")) {
-      return `
-### AI Analysis Configuration Error
-
-**The application is not configured to handle API keys in this local environment.**
-
-This feature requires an API key to be securely provided via environment variables (\`process.env.API_KEY\`), which is a standard practice in production and when using development servers like Vite or Next.js.
-
-Your current local server setup does not support this mechanism, so the AI analysis feature is unavailable. To use this feature, please run the application in an environment that supports environment variables.
-      `;
-    }
-
-    return `An error occurred while communicating with the AI. Please check your API key and network connection. Details: ${error instanceof Error ? error.message : String(error)}`;
+    // Provide a more user-friendly error message, including what might be wrong with the key.
+    return `An error occurred while communicating with the AI. Please ensure your API key is correct and has the necessary permissions, and check your network connection. 
+    
+Details: ${error instanceof Error ? error.message : String(error)}`;
   }
 };
