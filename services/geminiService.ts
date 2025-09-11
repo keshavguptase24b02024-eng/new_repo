@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { AnalysisResult } from '../types';
 
@@ -13,8 +14,10 @@ export const getAnalysisFromGemini = async (results: AnalysisResult[]): Promise<
     return "No data to analyze. Please upload or enter sample data first.";
   }
 
-  // Prioritize environment variables, but fall back to a window property for local development.
-  const apiKey = (typeof process !== 'undefined' ? process.env.API_KEY : undefined) || window.GEMINI_API_KEY;
+  // Securely get the API key with a clear priority for different environments.
+  const apiKey = (typeof process !== 'undefined' ? process.env.API_KEY : undefined) 
+                 || window.GEMINI_API_KEY 
+                 || (typeof localStorage !== 'undefined' ? localStorage.getItem('GEMINI_API_KEY') : null);
 
   if (!apiKey) {
     // This message is formatted in markdown so it will render nicely in the AI Analysis view.
@@ -23,15 +26,31 @@ export const getAnalysisFromGemini = async (results: AnalysisResult[]): Promise<
 
 **An API key is required to use the AI analysis feature.**
 
-This application is designed to use an API key provided through environment variables (\`process.env.API_KEY\`), which is standard for production environments.
+This application is designed for production using an environment variable (\`process.env.API_KEY\`). For local development, you can set the key in your browser.
 
-**For local development:** Since your current setup doesn't provide this environment variable, you can set the API key for your browser session. Open the developer console (usually with F12 or Ctrl+Shift+I) and execute the following command, replacing \`"YOUR_API_KEY_HERE"\` with your actual Gemini API key:
+**To set your key permanently for this browser (Recommended):**
+Open the developer console (F12 or Ctrl+Shift+I) and run this command, replacing \`"YOUR_API_KEY_HERE"\` with your actual key:
+\`\`\`javascript
+localStorage.setItem('GEMINI_API_KEY', "YOUR_API_KEY_HERE");
+\`\`\`
 
+**To set your key only for the current session:**
+If you prefer not to store it, you can use this command instead. You'll need to re-run it if you close this tab.
 \`\`\`javascript
 window.GEMINI_API_KEY = "YOUR_API_KEY_HERE";
 \`\`\`
 
-After running the command, please try generating the analysis again. This key will only be stored for your current session and will need to be set again if you close the browser tab.
+After running one of the commands, please try generating the analysis again.
+
+---
+
+### ⚠️ Important Security Notice
+
+**Never hardcode your API key directly in frontend code.** If you run this application in a browser, your API key will be exposed to anyone who inspects the site's code.
+
+**Best Practice for Production:** Use a backend server (like Node.js, Python, or Go) to act as a proxy. Your frontend should call your backend, and your backend will securely store the key and make the actual calls to the Gemini API.
+
+**For Frontend-Only Testing:** If you must test on a pure frontend, it is critical to restrict your API key in the Google Cloud Console. Add restrictions to only allow requests from specific web origins (e.g., \`http://localhost:3000\`). For production, you should rotate keys regularly and enforce strict domain restrictions.
     `;
   }
   
@@ -41,19 +60,19 @@ After running the command, please try generating the analysis again. This key wi
     const prompt = `
     You are an expert environmental scientist specializing in groundwater contamination.
     Analyze the following heavy metal pollution data and provide a concise, actionable report.
-    The data includes calculated indices: HPI (Heavy Metal Pollution Index), HEI (Heavy Metal Evaluation Index), and HCI (Heavy Metal Contamination Index).
+    The data includes calculated indices: HPI (Heavy Metal Pollution Index), HEI (Heavy Metal Evaluation Index), and HCI (Heavy Metal Contamination Index, also labeled as Cd).
     
     Data:
     ${JSON.stringify(results, null, 2)}
 
     Based on the data, please provide the following in your report:
-    1.  **Overall Summary:** A brief overview of the water quality across all samples.
-    2.  **Hotspot Identification:** Identify the sample locations (by ID and coordinates) with the highest pollution levels for each index (HPI, HEI, HCI).
+    1.  **Overall Summary:** A brief overview of the water quality across all samples. Is there a general trend?
+    2.  **Hotspot Identification:** Identify the sample locations (by ID and coordinates) with the highest pollution levels for each index (HPI, HEI, HCI). Be specific about which locations are most concerning.
     3.  **Key Pollutants:** Determine which heavy metals are the most significant contributors to the pollution across the dataset.
-    4.  **Potential Risks & Sources:** Briefly mention the potential health risks associated with the key pollutants and suggest likely anthropogenic or natural sources.
-    5.  **Recommendations:** Provide clear, actionable recommendations for further investigation, monitoring, and potential remediation.
+    4.  **Potential Risks & Sources:** Briefly mention the potential health risks associated with the key pollutants and suggest likely anthropogenic (e.g., industrial, agricultural runoff) or natural sources.
+    5.  **Recommendations:** Provide clear, actionable recommendations for authorities. Suggest specific next steps like "targeted soil testing near sample X" or "investigate industrial discharge upstream of location Y".
 
-    Format the response in clear, well-structured markdown.
+    Format the response in clear, well-structured markdown. Use headings, bold text, and lists to make the report easy to read.
   `;
 
     const response = await ai.models.generateContent({
