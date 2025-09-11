@@ -659,7 +659,11 @@ export const AiAnalysisView: React.FC<{ geminiAnalysis: string; isLoading: boole
     return '';
   }, [geminiAnalysis]);
 
-  const hasContent = !isLoading && !!geminiAnalysis && !geminiAnalysis.toLowerCase().startsWith("error") && !geminiAnalysis.toLowerCase().startsWith("an error occurred");
+  const isReportDownloadable = !isLoading && 
+    geminiAnalysis && 
+    !geminiAnalysis.startsWith('An error occurred') && 
+    !geminiAnalysis.startsWith('Failed to load') &&
+    !geminiAnalysis.startsWith('No data to analyze');
 
   return (
     <div className="bg-white rounded-xl border border-slate-200/80 shadow-lg shadow-slate-900/5">
@@ -667,7 +671,7 @@ export const AiAnalysisView: React.FC<{ geminiAnalysis: string; isLoading: boole
         <h3 className="font-semibold text-slate-800">AI Analysis Report</h3>
         <button
             onClick={handleDownloadPDF}
-            disabled={!hasContent || isDownloading}
+            disabled={!isReportDownloadable || isDownloading}
             className="flex items-center space-x-2 px-3 py-1.5 rounded-md transition-colors text-sm font-medium bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed"
         >
           {isDownloading ? (
@@ -687,7 +691,7 @@ export const AiAnalysisView: React.FC<{ geminiAnalysis: string; isLoading: boole
               <p className="text-xs text-slate-400">This may take a moment.</p>
             </div>
           </div>
-        ) : hasContent ? (
+        ) : geminiAnalysis ? (
           <div ref={reportContentRef} dangerouslySetInnerHTML={{ __html: formattedHtml }} />
         ) : (
           <div className="flex justify-center items-center py-20">
