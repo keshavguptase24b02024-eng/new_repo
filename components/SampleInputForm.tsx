@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { SampleData, Metal } from '../types';
+import { SampleData, Metal, ConcentrationValue } from '../types';
 import { AVAILABLE_METALS } from '../constants';
+import { Unit, convertToMgL } from '../utils/unitConversion';
 
 interface SampleInputFormProps {
   onAddSample: (sample: SampleData) => void;
@@ -9,80 +10,139 @@ interface SampleInputFormProps {
 const SampleInputForm: React.FC<SampleInputFormProps> = ({ onAddSample }) => {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
-  const [concentrations, setConcentrations] = useState<Record<Metal, string>>({
-    Pb: '', As: '', Hg: '', Cd: '', Cr: '', Ni: '', Zn: '', Fe: '',
-  });
+  const [concentrations, setConcentrations] = useState<Partial<Record<Metal, { value: string; unit: Unit }>>>(
+    AVAILABLE_METALS.reduce((acc, metal) => ({ ...acc, [metal]: { value: '', unit: Unit.MG_L } }), {})
+  );
+
+  const handleConcentrationChange = (metal: Metal, field: 'value' | 'unit', newValue: string) => {
+    setConcentrations(prev => ({
+      ...prev,
+      [metal]: {
+        ...prev[metal]!,
+        [field]: newValue,
+      },
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const lat = parseFloat(latitude);
     const lon = parseFloat(longitude);
 
-    if (isNaN(lat) || isNaN(lon)) {
-      alert('Please enter valid latitude and longitude.');
+    if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+      alert('Please enter valid latitude (-90 to 90) and longitude (-180 to 180).');
+      return;
+    }
+
+    const sampleConcentrations: Record<Metal, number | undefined> = {} as any;
+    const originalConcentrations: Record<Metal, ConcentrationValue | undefined> = {} as any;
+    let hasData = false;
+
+    Object.entries(concentrations).forEach(([metal, data]) => {
+      const value = parseFloat(data.value);
+      if (!isNaN(value) && value > 0) {
+        hasData = true;
+        const mgLValue = convertToMgL({ value, unit: data.unit });
+        sampleConcentrations[metal as Metal] = mgLValue;
+        originalConcentrations[metal as Metal] = {
+          value: value,
+          unit: data.unit,
+          mgLValue: mgLValue
+        };
+      }
+    });
+
+    if (!hasData) {
+      alert('Please enter at least one metal concentration.');
       return;
     }
     
-    const numericConcentrations: Record<Metal, number | undefined> = {} as Record<Metal, number | undefined>;
-    let hasConcentration = false;
-    for (const metal of AVAILABLE_METALS) {
-        const val = parseFloat(concentrations[metal]);
-        if (!isNaN(val) && val > 0) { // Only add if it's a valid positive number
-            numericConcentrations[metal] = val;
-            hasConcentration = true;
-        }
-    }
-    
-    if (!hasConcentration) {
-        alert('Please enter at least one metal concentration.');
-        return;
-    }
-
     const newSample: SampleData = {
-      id: `manual-${Date.now()}`,
+      id: `manual-${new Date().getTime()}`,
       latitude: lat,
       longitude: lon,
-      concentrations: numericConcentrations,
+      concentrations: sampleConcentrations,
+      originalConcentrations: originalConcentrations,
     };
 
     onAddSample(newSample);
-    
-    // Reset form
-    setLatitude('');
-    setLongitude('');
-    setConcentrations({ Pb: '', As: '', Hg: '', Cd: '', Cr: '', Ni: '', Zn: '', Fe: '' });
-  };
-
-  const handleConcentrationChange = (metal: Metal, value: string) => {
-    setConcentrations(prev => ({ ...prev, [metal]: value }));
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg w-full">
+    <div className="bg-white p-8 rounded-lg w-full max-h-[90vh] overflow-y-auto">
       <h3 className="text-xl font-bold mb-1 text-slate-800">Add Sample Manually</h3>
-       <p className="text-sm text-slate-500 mb-6">Enter the coordinates and metal concentrations for a single sample.</p>
+      <p className="text-sm text-slate-500 mb-6">Enter the geographic coordinates and heavy metal concentrations for your sample.</p>
+      
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-             <label className="block text-sm font-medium text-slate-600 mb-2">Coordinates</label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="number" value={latitude} onChange={e => setLatitude(e.target.value)} required step="any" className="w-full bg-slate-50 border border-slate-300 rounded-md p-2.5 text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="Latitude, e.g., 28.6139" />
-                <input type="number" value={longitude} onChange={e => setLongitude(e.target.value)} required step="any" className="w-full bg-slate-50 border border-slate-300 rounded-md p-2.5 text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="Longitude, e.g., 77.2090" />
-            </div>
+        {/* Location Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="latitude" className="block text-sm font-medium text-slate-700 mb-1">Latitude</label>
+            <input
+              type="number"
+              id="latitude"
+              value={latitude}
+              onChange={e => setLatitude(e.target.value)}
+              placeholder="e.g., 28.6139"
+              required
+              className="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-sm text-slate-800 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="longitude" className="block text-sm font-medium text-slate-700 mb-1">Longitude</label>
+            <input
+              type="number"
+              id="longitude"
+              value={longitude}
+              onChange={e => setLongitude(e.target.value)}
+              placeholder="e.g., 77.2090"
+              required
+              className="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-sm text-slate-800 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            />
+          </div>
         </div>
+
+        {/* Metal Concentrations Table */}
         <div>
-            <label className="text-sm font-medium text-slate-600 mb-2 block">Metal Concentrations (mg/L)</label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <h4 className="text-md font-semibold text-slate-800 mb-3">Metal Concentrations</h4>
+            <div className="space-y-3">
               {AVAILABLE_METALS.map(metal => (
-                <div key={metal}>
-                  <label htmlFor={metal} className="block text-xs font-medium text-slate-500 mb-1">{metal}</label>
-                  <input type="number" id={metal} value={concentrations[metal]} onChange={e => handleConcentrationChange(metal, e.target.value)} step="any" min="0" className="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="0.00" />
+                <div key={metal} className="grid grid-cols-3 gap-3 items-center">
+                  <label htmlFor={`value-${metal}`} className="text-sm font-medium text-slate-700">{metal}</label>
+                  <input
+                    type="number"
+                    step="any"
+                    id={`value-${metal}`}
+                    placeholder="Value"
+                    value={concentrations[metal]?.value || ''}
+                    onChange={e => handleConcentrationChange(metal, 'value', e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-sm text-slate-800 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  />
+                  <select
+                    id={`unit-${metal}`}
+                    value={concentrations[metal]?.unit}
+                    onChange={e => handleConcentrationChange(metal, 'unit', e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-sm text-slate-800 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  >
+                    {Object.values(Unit).map(unit => (
+                      <option key={unit} value={unit}>{unit}</option>
+                    ))}
+                  </select>
                 </div>
               ))}
             </div>
         </div>
-        <button type="submit" className="w-full bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-purple-500 transition duration-150 shadow-sm">
-          Add Sample
-        </button>
+        
+        {/* Submit Button */}
+        <div className="pt-4 border-t border-slate-200">
+          <button
+            type="submit"
+            className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg transition-colors text-sm font-semibold text-white bg-purple-600 hover:bg-purple-700 shadow-md shadow-purple-500/20"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" /></svg>
+            <span>Add Sample and Analyze</span>
+          </button>
+        </div>
       </form>
     </div>
   );
